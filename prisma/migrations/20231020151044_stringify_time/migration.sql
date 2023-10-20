@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Attendance" ALTER COLUMN "timeIn" SET DATA TYPE TEXT,
+ALTER COLUMN "timeOut" SET DATA TYPE TEXT;
