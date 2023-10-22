@@ -11,13 +11,12 @@ class UtilsController extends BaseController {
         next: NextFunction
     ) {
         try {
-            const result = await utilsService.uploadFileAndInsert(req);
-            return res.status(200).json({ message: result });
-        } catch (err) {
-            console.log(err);
-            return next(new Error()); 
+            const result = await utilsService.uploadFileAndInsert(req, next);
+            res.status(200).json({ message: result });
+        } catch (error) {
+            console.error(error);
+            return next(error);
         }
-        
     };
 }
 

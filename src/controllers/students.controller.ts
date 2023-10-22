@@ -13,9 +13,8 @@ class StudentsController extends BaseController {
         try {
             const data = await studentsService.getReportPerStudent();
             return res.status(200).json({ data });
-        } catch (err) {
-            console.log(err);
-            return next(new Error()); 
+        } catch (error) {
+            return next(error);
         }
         
     };

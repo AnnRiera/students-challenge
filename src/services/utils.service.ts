@@ -1,39 +1,42 @@
-import { Request } from 'express';
+import { NextFunction, Request } from 'express';
 import BaseService from './base.service';
-import formidable from 'formidable';
+import formidable, {errors as formidableErrors} from 'formidable';
 import { dir } from '../constants';
 import { Student, Attendance } from '../interfaces/main.interface';
+import { BadRequestError, CustomError, InternalError } from '../errors/main.error';
 import fs from 'fs';
-
 class UtilsService extends BaseService {
-    public async uploadFileAndInsert(req: Request): Promise<string> {
-        try {
-            const form = formidable({
-                uploadDir: dir,
-                keepExtensions: true,
-                filename: (name, ext, part, form) => {
-                    return `${part.originalFilename}`;
-                }
-            });
+    public async uploadFileAndInsert(req: Request, next: NextFunction): Promise<string> {
+        const form = formidable({
+            uploadDir: dir,
+            keepExtensions: true,
+            filename: (name, ext, part, form) => {
+                return `${part.originalFilename}`;
+            }
+        });
 
-            form.parse(req, async (err, fields, files) => {
-                if (err) throw new Error(err);
-                const { file } = files;
-                await this.formatFileContent(`${file?.[0].originalFilename}`);
-            });
+        try {
+            const files = await form.parse(req);
+            const { file } = files[1];
+            await this.formatFileContent(`${file?.[0].originalFilename}`);
             return 'File uploaded successfully';
         } catch (error) {
-            console.log(error);
-            throw new Error();
+            console.error(error);
+            if (error instanceof Error) throw new BadRequestError(error.message, []);
+            throw new InternalError;
         }
     }
 
     public readFile(fileName: string) {
         const readPath = `${dir}${fileName}`;
-        return fs.readFileSync(readPath).toString();
+        const content = fs.readFileSync(readPath).toString();
+        console.log(content)
+        if (content.length === 0) throw new BadRequestError('File is empty');
+
+        return content;
     }
 
-    public async formatFileContent(fileName: string) {
+    public async formatFileContent(fileName: string): Promise<void> {
         const names: Student[] = [];
         const attendances: Attendance[] = [];
         const content = this.readFile(fileName);
@@ -53,8 +56,8 @@ class UtilsService extends BaseService {
                     const arr = line.slice(9).split(' ');
                     attendances.push({
                         studentName: arr[0],
-                        timeIn: arr[2],
-                        timeOut: arr[3],
+                        startTime: arr[2],
+                        endTime: arr[3],
                         classroomCode: arr[4],
                         day: parseInt(arr[1])
                     });
@@ -62,23 +65,26 @@ class UtilsService extends BaseService {
             }
             await this.insertRecords(names, attendances);
         } catch (error) {
-            console.log(error);
-            throw new Error('Something went wrong');
+            console.error(error);
+            throw new  InternalError();
         }
     }
 
-    public async insertRecords(names: Student[], attendances: Attendance[]) {
+    public async insertRecords(names: Student[], attendances: Attendance[]): Promise<void> {
         try {
-            const checkIfStudentsExist = await this.db.student.findMany({
+            const studentsExist = await this.db.student.findMany({
                 where: {
                     name: {
                         in: [ ...names.map((student) => student.name) ] 
                     }
                 }
-            })
+            });
 
-            if (checkIfStudentsExist.length == 0) {
-                await this.db.student.createMany({ data: names });
+            if (studentsExist.length < names.length) {
+                const newStudents = names.filter((value) => !studentsExist.find((element) => element.name === value.name));
+                await this.db.student.createMany({ 
+                    data: newStudents
+                });
             }
             
             for (let item of attendances) {
@@ -91,8 +97,8 @@ class UtilsService extends BaseService {
                 if (student) {
                     await this.db.attendance.create({
                         data: {
-                            timeIn: item.timeIn,
-                            timeOut: item.timeOut,
+                            startTime: item.startTime,
+                            endTime: item.endTime,
                             studentId: student?.id,
                             classroomCode: item.classroomCode,
                             day: item.day
@@ -101,8 +107,8 @@ class UtilsService extends BaseService {
                 }
             }
         } catch (error) {
-            console.log(error);
-            throw new Error('Something went wrong');
+            console.error(error);
+            throw new InternalError();
         }
     }
 }

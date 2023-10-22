@@ -18,8 +18,8 @@ model Student {
 
 model Attendance {
   id               Int             @id @default(autoincrement())
-  timeIn           String
-  timeOut          String
+  startTime        String
+  endTime          String
   student          Student?         @relation(fields: [studentId], references: [id])
   studentId        Int?
   classroomCode    String          @db.VarChar(255)

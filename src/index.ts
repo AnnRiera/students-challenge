@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import dotenv from 'dotenv';
 import { router } from './routes/router';
+import { errorHandler } from './middlewares/errorHandler.middleware';
 
 //For env File 
 dotenv.config();
@@ -24,6 +25,8 @@ app.use(
 );
 
 app.use('/api', router);
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

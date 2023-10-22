@@ -7,13 +7,15 @@ export interface Student {
 export interface StudentReport {
     id: number;
     name: string;
-    timeIn: string;
-    timeOut: string;
+    startTime: string;
+    endTime: string;
     day: Days;
+    classroomCode: string;
 }
 
 export interface StudentRateTime extends Student {
     studentId: number;
     day: Days;
     minutes: number;
+    daysCount: number;
 }

@@ -1,7 +1,6 @@
 # compiled output
 /dist
 /node_modules
-prisma/migrations
 
 # Logs
 logs
@@ -37,3 +36,7 @@ lerna-debug.log*
 
 # Environment
 .env
+
+# Folders
+prisma/migrations
+src/public
