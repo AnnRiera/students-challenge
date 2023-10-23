@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import { router } from './routes/router';
 import { errorHandler } from './middlewares/errorHandler.middleware';
 
-//For env File 
 dotenv.config();
 
 const app: Application = express();
@@ -25,7 +24,6 @@ app.use(
 );
 
 app.use('/api', router);
-
 app.use(errorHandler);
 
 app.listen(port, () => {

@@ -1,4 +1,4 @@
-import { Days } from "../enums/days.enum";
+import { Days } from '../enums/days.enum';
 
 export interface Student {
     name: string;

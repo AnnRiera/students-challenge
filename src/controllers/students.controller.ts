@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express";
-import { BaseController } from "./base.controller";
-import { StudentsService } from "../services/students.service";
+import { Request, Response, NextFunction } from 'express';
+import { BaseController } from './base.controller';
+import { StudentsService } from '../services/students.service';
 
 const studentsService = new StudentsService();
 
@@ -16,7 +16,6 @@ class StudentsController extends BaseController {
         } catch (error) {
             return next(error);
         }
-        
     };
 }
 

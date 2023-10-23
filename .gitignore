@@ -39,4 +39,5 @@ lerna-debug.log*
 
 # Folders
 prisma/migrations
+src/public
 !src/public/.gitkeep

@@ -4,7 +4,7 @@ import { BadRequestError, InternalError } from '../errors/main.error';
 class StudentsService extends BaseService {
     public async getReportPerStudent(): Promise<string[]> {
         const arr: StudentRateTime[] = [];
-        
+
         try {
             const query = await this.db.$queryRaw<StudentReport[]>`
                 SELECT S.id, S."name", A."startTime", A."endTime", A."day", A."classroomCode"
@@ -22,8 +22,8 @@ class StudentsService extends BaseService {
                 });
             }
 
-            const reports = this.formattingOutput(arr).map((value) => {
-                if (value.minutes > 0) {
+            const reports = this.formattingOutput(arr).sort((a,b) => b.minutes - a.minutes).map((value) => {
+                if (value.minutes > 5) {
                     const pluralOrSingular = (value.daysCount > 1) ? 'days' : 'day';
                     return `${value.name}: ${value.minutes} minutes in ${value.daysCount} ${pluralOrSingular}`;
                 }

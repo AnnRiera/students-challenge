@@ -1,12 +1,12 @@
-import { NextFunction, Request } from 'express';
+import { Request } from 'express';
 import BaseService from './base.service';
-import formidable, {errors as formidableErrors} from 'formidable';
+import formidable from 'formidable';
 import { dir } from '../constants';
 import { Student, Attendance } from '../interfaces/main.interface';
-import { BadRequestError, CustomError, InternalError } from '../errors/main.error';
+import { BadRequestError, InternalError } from '../errors/main.error';
 import fs from 'fs';
 class UtilsService extends BaseService {
-    public async uploadFileAndInsert(req: Request, next: NextFunction): Promise<string> {
+    public async uploadFileAndInsert(req: Request): Promise<string> {
         const form = formidable({
             uploadDir: dir,
             keepExtensions: true,
@@ -29,11 +29,7 @@ class UtilsService extends BaseService {
 
     public readFile(fileName: string) {
         const readPath = `${dir}${fileName}`;
-        const content = fs.readFileSync(readPath).toString();
-        console.log(content)
-        if (content.length === 0) throw new BadRequestError('File is empty');
-
-        return content;
+        return fs.readFileSync(readPath).toString();
     }
 
     public async formatFileContent(fileName: string): Promise<void> {
@@ -49,7 +45,7 @@ class UtilsService extends BaseService {
                     const studentName = line.slice(8);
                     names.push({
                         name: studentName,
-                    })
+                    });
                 }
 
                 if (line.includes('Presence')) {

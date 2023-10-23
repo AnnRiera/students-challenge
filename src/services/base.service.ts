@@ -1,4 +1,4 @@
-import { prisma } from '../utility/connections'
+import { prisma } from '../utility/connections';
 abstract class BaseService {
   protected db = prisma.instance;
   
