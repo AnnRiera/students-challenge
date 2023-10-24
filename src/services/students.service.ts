@@ -69,6 +69,12 @@ class StudentsService extends BaseService {
         const [ endHour, endMinute ] = end.split(':').map(Number);
 
         if (startHour === endHour && startMinute === endMinute) return 0;
+        if (startHour < 0 || endHour > 24) throw new BadRequestError(
+            `Start time must be greater or equal to 0 and end date must be less of equal to 24 in ${student.name}'s record`,
+            [
+                student
+            ]
+        );
         if (startHour > endHour) throw new BadRequestError(
             `Start time is greater than end date in ${student.name}'s record`,
             [

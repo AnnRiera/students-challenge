@@ -18,6 +18,15 @@ export const studentEqualTimes: StudentReport = {
     classroomCode: 'R100'
 };
 
+export const studentWrongTimes: StudentReport = {
+    name: 'Marco',
+    startTime: '00:00',
+    endTime: '25:00',
+    id: 1,
+    day: 1,
+    classroomCode: 'R100'
+};
+
 export const studentEntryReport: StudentRateTime[] = [
     {
         studentId: 1,
@@ -44,6 +53,7 @@ export const studentOutputReport: StudentRateTime[] = [
         name: 'Marco'
     }
 ];
+
 export const studentEmptyReport: StudentRateTime[] = [];
 export const minutesStudent: number = 65;
 export const path = __dirname;
