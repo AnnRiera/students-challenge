@@ -4,8 +4,10 @@ import formidable from 'formidable';
 import { dir } from '../constants';
 import { Student, Attendance } from '../interfaces/main.interface';
 import { BadRequestError, InternalError } from '../errors/main.error';
-import fs from 'fs';
+import fs from 'node:fs';
+
 class UtilsService extends BaseService {
+    // Upload and calls the formatted.
     public async uploadFileAndInsert(req: Request): Promise<string> {
         const form = formidable({
             uploadDir: dir,
@@ -18,7 +20,8 @@ class UtilsService extends BaseService {
         try {
             const files = await form.parse(req);
             const { file } = files[1];
-            await this.formatFileContent(`${file?.[0].originalFilename}`);
+            // Here is where the formatted is call.
+            await this.formatFileContent(`${dir}${file?.[0].originalFilename}`);
             return 'File uploaded successfully';
         } catch (error) {
             console.error(error);
@@ -27,11 +30,13 @@ class UtilsService extends BaseService {
         }
     }
 
-    public readFile(fileName: string) {
-        const readPath = `${dir}${fileName}`;
-        return fs.readFileSync(readPath).toString();
+    // Reads the uploaded file and converted into a string.
+    public readFile(filePath: string) {
+        if (filePath.length <= 0) throw new BadRequestError('File path is required');
+        return fs.readFileSync(filePath).toString();
     }
 
+    // This function will fill arrays with the students info and their attendance.
     public async formatFileContent(fileName: string): Promise<void> {
         const names: Student[] = [];
         const attendances: Attendance[] = [];
@@ -59,6 +64,7 @@ class UtilsService extends BaseService {
                     });
                 }
             }
+            // This is where the insertion takes place.
             await this.insertRecords(names, attendances);
         } catch (error) {
             console.error(error);
@@ -66,6 +72,7 @@ class UtilsService extends BaseService {
         }
     }
 
+    // This function create the data in database.
     public async insertRecords(names: Student[], attendances: Attendance[]): Promise<void> {
         try {
             const studentsExist = await this.db.student.findMany({

@@ -1,7 +1,9 @@
-import { Student } from './students.interface';
+import { Student, StudentReport, StudentRateTime } from './students.interface';
 import { Attendance } from './attendances.interface';
 
 export {
     Student,
-    Attendance
+    Attendance,
+    StudentReport,
+    StudentRateTime
 };

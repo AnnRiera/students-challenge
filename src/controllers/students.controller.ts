@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { BaseController } from './base.controller';
 import { StudentsService } from '../services/students.service';
 
 const studentsService = new StudentsService();
 
-class StudentsController extends BaseController {
+class StudentsController {
     public async getStudentsAttendance(
         req: Request,
         res: Response,

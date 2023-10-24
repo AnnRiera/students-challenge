@@ -1,7 +1,8 @@
 import BaseService from './base.service';
-import { StudentReport, StudentRateTime } from '../interfaces/students.interface';
+import { StudentReport, StudentRateTime } from '../interfaces/main.interface';
 import { BadRequestError, InternalError } from '../errors/main.error';
 class StudentsService extends BaseService {
+    // This function will get the report of student's attendance.
     public async getReportPerStudent(): Promise<string[]> {
         const arr: StudentRateTime[] = [];
 
@@ -22,6 +23,9 @@ class StudentsService extends BaseService {
                 });
             }
 
+            /* This call gets the formmated data, transform the original data and filter all empty strings in order 
+                to return all students with more than 5 minutes of attendance.
+            */
             const reports = this.formattingOutput(arr).sort((a,b) => b.minutes - a.minutes).map((value) => {
                 if (value.minutes > 5) {
                     const pluralOrSingular = (value.daysCount > 1) ? 'days' : 'day';
@@ -38,6 +42,7 @@ class StudentsService extends BaseService {
         }
     }
 
+    // This function will accumulate the minutes and will format the data into an specific structure.
     public formattingOutput(data: StudentRateTime[]): StudentRateTime[]  {
         const results: StudentRateTime[] = [];
         for (let info of data) {
@@ -58,6 +63,7 @@ class StudentsService extends BaseService {
         return results;
     }
 
+    // Calcules the minutes using a formula that multiply the start and end hours by 60 and to convert it into minutes.
     public calculateMinutes(start: string, end: string, student: StudentReport): number {
         const [ startHour, startMinute ] = start.split(':').map(Number);
         const [ endHour, endMinute ] = end.split(':').map(Number);

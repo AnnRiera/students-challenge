@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { BaseController } from './base.controller';
 import { UtilsService } from '../services/utils.service';
 
 const utilsService = new UtilsService();
 
-class UtilsController extends BaseController {
+class UtilsController {
     public async uploadFileAndInsert(
         req: Request,
         res: Response,
